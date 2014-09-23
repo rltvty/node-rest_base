@@ -1,12 +1,12 @@
 var should = require('should');
 var request = require('request');
-var globals = require('../lib/globals');
+var base = require('../index');
 
 describe('http_server ping', function() {
-  var root_url = 'http://localhost:' + globals.config.http_server_port;
+  var root_url = 'http://localhost:' + base.config.http_server_port;
 
   beforeEach(function(done) {
-    globals.start_server();
+    base.start_server();
     done();
   });
 
@@ -22,7 +22,7 @@ describe('http_server ping', function() {
   });
 
   afterEach(function(done) {
-    globals.stop_server();
+    base.stop_server();
     done();
   });
 });

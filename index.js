@@ -1,8 +1,8 @@
 var http = require('http');
 var bunyan = require('bunyan');
 var underscore = require('underscore');
-var config = require('./config')();
-var express_app = require('./express_app');
+var config = require('./lib/config')();
+var express_app = require('./lib/express_app');
 
 var global_namespace_key = config.name + '_global_key';
 
@@ -20,9 +20,9 @@ if (!(global_namespace_key in process)) {
 
   if (globals.config.verbose) {
     logging_streams.push({
-        level: globals.config.logging_level,
-        stream: process.stdout
-      });
+      level: globals.config.logging_level,
+      stream: process.stdout
+    });
   }
 
   globals.logger = bunyan.createLogger({

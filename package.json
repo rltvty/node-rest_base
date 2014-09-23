@@ -1,5 +1,5 @@
 {
-  "name": "node-rest_base",
+  "name": "rest_base",
   "version": "0.0.1",
   "dependencies": {
     "bunyan": "0.23.1",
@@ -20,5 +20,26 @@
     "type": "git",
     "url": "git://github.com/rltvty/node-rest_base.git"
   },
-  "private" : false
+  "private": false,
+  "description": "A package containing the base nessecities for creating a rest API, using bunyan for logging, and express for the http front end.",
+  "bugs": {
+    "url": "https://github.com/rltvty/node-rest_base/issues"
+  },
+  "homepage": "https://github.com/rltvty/node-rest_base",
+  "main": "index.js",
+  "directories": {},
+  "keywords": [
+    "rest",
+    "express",
+    "underscore",
+    "bunyan",
+    "logger",
+    "config",
+    "yaml"
+  ],
+  "author": {
+    "name" : "Eric Pinzur",
+    "url" : "https://github.com/rltvty"
+  },
+  "license": "MIT"
 }
