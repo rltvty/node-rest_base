@@ -6,19 +6,21 @@ var express_app = require('./lib/express_app');
 
 var global_namespace_key = config.name + '_global_key';
 var server = null;
+var setup_routes_method = null;
 
 if (!(global_namespace_key in process)) {
   var globals = {};
 
   globals.config = config;
   globals.logger = setup_logger();
-  globals.app = express_app(globals.config, globals.logger);
   globals.underscore = underscore;
 
   globals.start_server = function() {
     if (server == null) {
+      var app = express_app(globals.config, globals.logger, setup_routes_method);
+      server = http.createServer(app);
+
       var server_port = globals.config['http_server_port'] || 3001;
-      server = http.createServer(globals.app);
       server.listen(server_port);
       globals.logger.info('Server listening on port %s', server_port);
     }
@@ -32,6 +34,10 @@ if (!(global_namespace_key in process)) {
     }
   };
 
+  globals.set_setup_routes_method = function(routes_method) {
+    setup_routes_method = routes_method;
+  };
+
   process[global_namespace_key] = globals;
   globals.logger.info('Initialized global object');
   globals.logger.info('Running on node version: ' + process.version);
@@ -43,7 +49,8 @@ module.exports = {
   app : process[global_namespace_key].app,
   start_server : process[global_namespace_key].start_server,
   stop_server : process[global_namespace_key].stop_server,
-  _ : process[global_namespace_key].underscore
+  _ : process[global_namespace_key].underscore,
+  set_setup_routes_method: process[global_namespace_key].set_setup_routes_method
 };
 
 function setup_logger() {
