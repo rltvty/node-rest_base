@@ -1,45 +1,26 @@
 var http = require('http');
 var bunyan = require('bunyan');
 var underscore = require('underscore');
-var config = require('./lib/config')();
+var config = require('./lib/config');
 var express_app = require('./lib/express_app');
 
 var global_namespace_key = config.name + '_global_key';
+var server = null;
 
 if (!(global_namespace_key in process)) {
   var globals = {};
 
   globals.config = config;
-
-  var logging_streams = [
-    {
-      path: globals.config.logging_path,
-      level: globals.config.logging_level
-    }
-  ];
-
-  if (globals.config.verbose) {
-    logging_streams.push({
-      level: globals.config.logging_level,
-      stream: process.stdout
-    });
-  }
-
-  globals.logger = bunyan.createLogger({
-    name: config.name,
-    streams: logging_streams
-  });
-
-  globals.app = express_app(globals.logger);
+  globals.logger = setup_logger();
+  globals.app = express_app(globals.config, globals.logger);
   globals.underscore = underscore;
-
-  var server = null;
 
   globals.start_server = function() {
     if (server == null) {
+      var server_port = globals.config['http_server_port'] || 3001;
       server = http.createServer(globals.app);
-      server.listen(globals.config.http_server_port);
-      globals.logger.info('Server listening on port '+ globals.config.http_server_port);
+      server.listen(server_port);
+      globals.logger.info('Server listening on port %s', server_port);
     }
   };
 
@@ -47,7 +28,7 @@ if (!(global_namespace_key in process)) {
     if (server != null) {
       server.close();
       server = null;
-      globals.logger.info('Server stopped listening on port '+ globals.config.http_server_port);
+      globals.logger.info('Server stopped listening on port %s', globals.config['http_server_port']);
     }
   };
 
@@ -64,3 +45,19 @@ module.exports = {
   stop_server : process[global_namespace_key].stop_server,
   _ : process[global_namespace_key].underscore
 };
+
+function setup_logger() {
+  var logging_path = config['logging_path'];
+  var logging_level = config['logging_level'];
+  var logging_streams = [];
+
+  if (logging_path) {
+    logging_streams.push({ path: logging_path, level: logging_level })
+  }
+
+  if (config['verbose'] || logging_path.count == 0) {
+    logging_streams.push({ stream: process.stdout, level: logging_level });
+  }
+
+  return bunyan.createLogger({ name: config['name'], streams: logging_streams });
+}
