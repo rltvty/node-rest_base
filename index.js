@@ -1,6 +1,7 @@
 var http = require('http');
 var bunyan = require('bunyan');
 var underscore = require('underscore');
+var request = require('request');
 var config = require('./lib/config');
 var express_app = require('./lib/express_app');
 
@@ -14,6 +15,7 @@ if (!(global_namespace_key in process)) {
   globals.config = config;
   globals.logger = setup_logger();
   globals.underscore = underscore;
+  globals.request = request;
 
   globals.start_server = function() {
     if (server == null) {
@@ -50,7 +52,8 @@ module.exports = {
   start_server : process[global_namespace_key].start_server,
   stop_server : process[global_namespace_key].stop_server,
   _ : process[global_namespace_key].underscore,
-  set_setup_routes_method: process[global_namespace_key].set_setup_routes_method
+  set_setup_routes_method: process[global_namespace_key].set_setup_routes_method,
+  request: process[global_namespace_key].request
 };
 
 function setup_logger() {
